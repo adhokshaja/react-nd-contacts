@@ -23,11 +23,17 @@ class App extends Component {
         "avatarURL": "http://localhost:5001/tyler.jpg"
       }
     ]
-  }
+  };
+  removeContact = (contact)=>{
+    this.setState((currState)=>({
+        contacts:currState.contacts.filter((c)=>c.id!=contact.id)
+      })
+    );
+  };
   render() {
     return (
       <div>
-        <ListContacts contactsList= {this.state.contacts}/>
+        <ListContacts onDeleteContact={this.removeContact} contactsList= {this.state.contacts}/>
       </div>
     );
   }
