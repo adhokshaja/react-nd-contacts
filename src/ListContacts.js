@@ -1,56 +1,68 @@
-import React, { Component } from 'react';
+import React,{Component} from 'react';
+import PropTypes from 'prop-types';
+import escapeRegExp from 'escape-string-regexp'
+import sortBy from 'sort-by'
 
-
-function ListContacts(props) {
-	const contacts = props.contactsList;
-	return(
-			<ol className='contact-list'>
-				{
-					contacts.map(contact => 
-						(<li key={contact.id} className='contact-list-item'>
-							<div className='contact-avatar' style={{
-								backgroundImage:`url(${contact.avatarURL})`
-							}}>
-							</div>
-							 <div className='contact-details'>
-									<p>{contact.name}</p>
-									<p>{contact.email}</p>
-							</div>
-							<button onClick={()=>props.onDeleteContact(contact)} className='contact-remove'>Remove</button>
-						</li>)
-					)
-				}
-			</ol>
+class ListContacts extends Component{
+	static propTypes = {
+		contactsList:PropTypes.array.isRequired,
+		onDeleteContact:PropTypes.func.isRequired
+	} 
+	state ={
+		query:""
+	}
+	updateQuery = (query) => {
+		this.setState({query:query.trim()});
+	}
+	clearQuery = () => {
+		this.setState({query:''});
+	}
+	render(){
+		const {query} = this.state;
+		const {contactsList, onDeleteContact} = this.props;
+		let showingContacts = contactsList;
+		if(query){
+			const Match = new RegExp(escapeRegExp(query),'i')
+			showingContacts = showingContacts.filter(contact => Match.test(contact.name));
+		}
+		showingContacts.sort(sortBy('name'));
+		return(
+			<div className="list-contacts">
+				<div className="list-contats-top">
+					<input className="search-contacts" placeholder="Search" type="search" 
+						value={query}
+						onChange = {(event)=>this.updateQuery(event.target.value)}
+					/>
+				</div>
+				{showingContacts.length !==contactsList.length && (
+					<div className='showing-contacts'>
+						<span>Now Showing {showingContacts.length} of {contactsList.length} contacts</span>
+						<button onClick={()=>this.clearQuery()}> Show All </button>
+					</div>
+				)}
+				<ol className='contact-list'>
+					{
+						showingContacts.map(contact => 
+							(<li key={contact.id} className='contact-list-item'>
+								<div className='contact-avatar' style={{
+									backgroundImage:`url(${contact.avatarURL})`
+								}}>
+								</div>
+								 <div className='contact-details'>
+										<p>{contact.name}</p>
+										<p>{contact.email}</p>
+								</div>
+								<button onClick={()=>onDeleteContact(contact)} className='contact-remove'>Remove</button>
+							</li>)
+						)
+					}
+				</ol>
+			</div>
 		)
+	}
+
 }
 
-
-// class ListContacts extends Component{
-
-// 	render(){
-// 		const contacts = this.props.contactsList;
-// 		return(
-// 			<ol className='contact-list'>
-// 				{
-// 					contacts.map(contact => 
-// 						(<li key={contact.id} className='contact-list-item'>
-// 							<div className='contact-avatar' style={{
-// 								backgroundImage:`url(${contact.avatarURL})`
-// 							}}>
-// 							</div>
-// 							 <div className='contact-details'>
-// 									<p>{contact.name}</p>
-// 									<p>{contact.email}</p>
-// 							</div>
-// 							<button className='contact-remove'>Remove</button>
-// 						</li>)
-// 					)
-// 				}
-// 			</ol>
-// 		)
-// 	}
-
-// }
 
 
 export  default ListContacts
