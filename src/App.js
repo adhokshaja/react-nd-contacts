@@ -27,6 +27,14 @@ class App extends Component {
     ContactsAPI.getAll()
       .then(contacts=>this.setState({contacts:contacts}));
   }
+  createContact=(contact)=>{
+    ContactsAPI.create(contact).then(contact=>{
+      this.setState((currState)=>({
+        contacts : [...currState.contacts,contact]
+      }))
+    })
+  }
+
   componentDidMount() {
     this.fetchContacts();
   }
@@ -41,7 +49,14 @@ class App extends Component {
         )}
       />
       <Route path='/create'
-        component={CreateContact}
+        render={({history})=>(
+           <CreateContact
+           onCreateContact={(contactDetails)=>{
+              this.createContact(contactDetails);
+              history.push('/');
+            }} 
+           />
+        )}
       />
       </div>
     );

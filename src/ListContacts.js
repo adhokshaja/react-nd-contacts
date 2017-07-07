@@ -7,8 +7,7 @@ import sortBy from 'sort-by'
 class ListContacts extends Component{
 	static propTypes = {
 		contactsList:PropTypes.array.isRequired,
-		onDeleteContact:PropTypes.func.isRequired,
-		onNavigate:PropTypes.func
+		onDeleteContact:PropTypes.func.isRequired
 	} 
 	state ={
 		query:""
